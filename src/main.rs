@@ -5,7 +5,7 @@ mod system;
 
 use cache::cache::LfuCache;
 use disk::disk::Disk;
-use crate::scheduler::scheduler::{FlookScheduler, IoOperation, LookScheduler, Request, FifoScheduler};
+use crate::scheduler::scheduler::{IoOperation, Request, FifoScheduler};
 use system::system::System;
 
 fn main() {
