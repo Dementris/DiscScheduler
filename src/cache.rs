@@ -29,32 +29,41 @@ pub mod cache {
         }
 
         pub fn access(&mut self, sector: u32) {
-            // Ліва частина
+            // Left segment
             if let Some(buffer) = self.left.iter_mut().find(|b| b.sector == sector) {
-                println!("[LFU] Buffer for sector {} found in left segment. Counter: {}", sector, buffer.counter);
+                println!(
+                    "[LFU] Buffer for sector {} found in left segment. Counter: {}",
+                    sector, buffer.counter
+                );
                 buffer.counter += 1;
                 return;
             }
 
-            // Середня частина
+            // Middle segment
             if let Some(pos) = self.middle.iter().position(|b| b.sector == sector) {
                 let mut buffer = self.middle.remove(pos).unwrap();
-                println!("[LFU] Buffer for sector {} moved from middle to left. Counter: {}", sector, buffer.counter);
+                println!(
+                    "[LFU] Buffer for sector {} moved from middle to left. Counter: {}",
+                    sector, buffer.counter
+                );
                 buffer.counter += 1;
                 self.move_to_left(buffer);
                 return;
             }
 
-            // Права частина
+            // Right segment
             if let Some(pos) = self.right.iter().position(|b| b.sector == sector) {
                 let mut buffer = self.right.remove(pos).unwrap();
-                println!("[LFU] Buffer for sector {} moved from right to left. Counter: {}", sector, buffer.counter);
+                println!(
+                    "[LFU] Buffer for sector {} moved from right to left. Counter: {}",
+                    sector, buffer.counter
+                );
                 buffer.counter += 1;
                 self.move_to_left(buffer);
                 return;
             }
 
-            // Буфер відсутній
+            // Buffer not found
             println!("[LFU] Buffer for sector {} not found. Adding to left.", sector);
             self.add_to_left(Buffer { sector, counter: 1 });
         }
@@ -78,7 +87,6 @@ pub mod cache {
         fn move_to_right(&mut self, buffer: Buffer) {
             self.right.push_front(buffer);
             if self.right.len() > self.total_buffers - self.left_max - self.middle_max {
-
                 if let Some((min_index, _)) = self
                     .right
                     .iter()

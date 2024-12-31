@@ -27,11 +27,23 @@ pub mod disk {
             }
         }
 
-        pub fn simulate_access(&self, track: u32, sector: u32) -> u32 {
+        pub fn simulate_access(&self, track: u32, sector_offset: u32) -> u32 {
             let seek_time = track * self.next_track_seek_time;
             let rotational_latency = self.rotation_latency_time;
-            let access_time = self.sector_access_time;
-            seek_time + rotational_latency + access_time
+            let sector_access_time = self.sector_access_time;
+
+            println!(
+                "[DISK] Simulating access: Track {}, Sector Offset {}. Seek time: {}ms, Rotation latency: {}ms, Access time: {}ms.",
+                track, sector_offset, seek_time, rotational_latency, sector_access_time
+            );
+
+            seek_time + rotational_latency + sector_access_time
+        }
+
+        pub fn get_track_sector(&self, sector: u32) -> (u32, u32) {
+            let track = sector / self.sectors_per_track;
+            let sector_offset = sector % self.sectors_per_track;
+            (track, sector_offset)
         }
     }
 }

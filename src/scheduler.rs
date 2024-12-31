@@ -1,13 +1,13 @@
 pub mod scheduler {
     use std::collections::VecDeque;
 
-    #[derive(Debug)]
+    #[derive(Debug, Clone)]
     pub enum IoOperation {
         Read,
         Write,
     }
 
-    #[derive(Debug)]
+    #[derive(Debug, Clone)]
     pub struct Request {
         pub sector: u32,
         pub operation: IoOperation,
