@@ -47,20 +47,32 @@ pub mod process {
         pub fn move_to_sleep(&mut self, process_id: u32) {
             if let Some(pos) = self.run_q.iter().position(|p| p.id == process_id) {
                 let process = self.run_q.remove(pos).unwrap();
-                println!("[ProcessManager] Moving process {} to sleep queue.", process.id);
+                println!(
+                    "[ProcessManager] Moving process {} to sleep queue.",
+                    process.id
+                );
                 self.sleep_q.push_back(process);
             } else {
-                println!("[ProcessManager] Process {} not found in run queue.", process_id);
+                println!(
+                    "[ProcessManager] Process {} not found in run queue.",
+                    process_id
+                );
             }
         }
 
         pub fn wake_up_process(&mut self, process_id: u32) {
             if let Some(pos) = self.sleep_q.iter().position(|p| p.id == process_id) {
                 let process = self.sleep_q.remove(pos).unwrap();
-                println!("[ProcessManager] Waking up process {} and moving to run queue.", process.id);
+                println!(
+                    "[ProcessManager] Waking up process {} and moving to run queue.",
+                    process.id
+                );
                 self.run_q.push_back(process);
             } else {
-                println!("[ProcessManager] Process {} not found in sleep queue.", process_id);
+                println!(
+                    "[ProcessManager] Process {} not found in sleep queue.",
+                    process_id
+                );
             }
         }
     }

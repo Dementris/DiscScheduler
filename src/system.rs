@@ -1,6 +1,6 @@
 pub mod system {
-    use crate::process::process::{ProcessManager};
-    use crate::scheduler::scheduler::{Scheduler, Request};
+    use crate::process::process::ProcessManager;
+    use crate::scheduler::scheduler::Scheduler;
     use crate::{Disk, LfuCache};
 
     pub struct System<S: Scheduler> {
@@ -25,10 +25,13 @@ pub mod system {
         }
 
         pub fn run(&mut self) {
-            while !self.process_manager.run_q.is_empty() || !self.process_manager.sleep_q.is_empty() {
-
+            while !self.process_manager.run_q.is_empty() || !self.process_manager.sleep_q.is_empty()
+            {
                 if let Some(mut process) = self.process_manager.run_q.pop_front() {
-                    println!("[Time {}] Running process {}.", self.current_time, process.id);
+                    println!(
+                        "[Time {}] Running process {}.",
+                        self.current_time, process.id
+                    );
 
                     // Add all process requests to the scheduler queue
                     for request in &process.requests {
@@ -56,7 +59,8 @@ pub mod system {
                                     "[Time {}] CACHE: Sector {} not found in cache. Accessing disk.",
                                     self.current_time, request.sector
                                 );
-                                let (track, sector_offset) = self.disk.get_track_sector(request.sector);
+                                let (track, sector_offset) =
+                                    self.disk.get_track_sector(request.sector);
                                 let disk_time = self.disk.simulate_access(track, sector_offset);
                                 println!(
                                     "[Time {}] DRIVER: Accessing track {}, sector {}. Time: {}ms.",
@@ -70,7 +74,9 @@ pub mod system {
                         } else {
                             break;
                         }
-                        if let Some(next_request) = self.scheduler.get_next_request(self.current_time) {
+                        if let Some(next_request) =
+                            self.scheduler.get_next_request(self.current_time)
+                        {
                             println!(
                                 "[Time {}] SCHEDULER: Retrieved request for sector {} ({:?})",
                                 self.current_time, next_request.sector, next_request.operation
@@ -80,19 +86,31 @@ pub mod system {
                     }
 
                     if process.has_requests() {
-                        println!("[Time {}] Process {} moved to end of run queue.", self.current_time, process.id);
+                        println!(
+                            "[Time {}] Process {} moved to end of run queue.",
+                            self.current_time, process.id
+                        );
                         process.time_remaining = self.quantum_time;
                         self.process_manager.move_to_sleep(process.id);
                     } else {
-                        println!("[Time {}] Process {} completed.", self.current_time, process.id);
+                        println!(
+                            "[Time {}] Process {} completed.",
+                            self.current_time, process.id
+                        );
                     }
                 } else if !self.process_manager.sleep_q.is_empty() {
                     if let Some(sleeping_process) = self.process_manager.sleep_q.pop_front() {
-                        println!("[Time {}] Waking up process {} from sleep queue.", self.current_time, sleeping_process.id);
+                        println!(
+                            "[Time {}] Waking up process {} from sleep queue.",
+                            self.current_time, sleeping_process.id
+                        );
                         self.process_manager.wake_up_process(sleeping_process.id);
                     }
                 } else {
-                    println!("\n[Time {}] SCHEDULER: No more requests to process.", self.current_time);
+                    println!(
+                        "\n[Time {}] SCHEDULER: No more requests to process.",
+                        self.current_time
+                    );
                     break;
                 }
             }

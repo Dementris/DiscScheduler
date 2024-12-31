@@ -29,7 +29,6 @@ pub mod cache {
         }
 
         pub fn access(&mut self, sector: u32) {
-            // Left segment
             if let Some(buffer) = self.left.iter_mut().find(|b| b.sector == sector) {
                 println!(
                     "[LFU] Buffer for sector {} found in left segment. Counter: {}",
@@ -39,7 +38,6 @@ pub mod cache {
                 return;
             }
 
-            // Middle segment
             if let Some(pos) = self.middle.iter().position(|b| b.sector == sector) {
                 let mut buffer = self.middle.remove(pos).unwrap();
                 println!(
@@ -51,7 +49,6 @@ pub mod cache {
                 return;
             }
 
-            // Right segment
             if let Some(pos) = self.right.iter().position(|b| b.sector == sector) {
                 let mut buffer = self.right.remove(pos).unwrap();
                 println!(
@@ -63,8 +60,10 @@ pub mod cache {
                 return;
             }
 
-            // Buffer not found
-            println!("[LFU] Buffer for sector {} not found. Adding to left.", sector);
+            println!(
+                "[LFU] Buffer for sector {} not found. Adding to left.",
+                sector
+            );
             self.add_to_left(Buffer { sector, counter: 1 });
         }
 
